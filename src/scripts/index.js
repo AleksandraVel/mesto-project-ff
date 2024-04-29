@@ -74,15 +74,3 @@ newCardForm.addEventListener("submit", function (evt) {
   closeModal(popupTypeNewCard);
   newCardForm.reset();
 });
-
-// Открытие попапа с картинкой
-function enlargeImage(information) {
-  const popupImage = popupTypeImage.querySelector(".popup__image");
-  const popupCaption = popupTypeImage.querySelector(".popup__caption");
-
-  popupImage.src = information.link;
-  popupImage.alt = `увеличенное изображение ${information.name}`;
-  popupCaption.textContent = information.name;
-
-  openModal(popupTypeImage);
-}

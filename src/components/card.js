@@ -35,3 +35,15 @@ card.remove();
 export function toggleLike(buttonElement) {
 buttonElement.classList.toggle("card__like-button_is-active");
 }
+
+// Открытие попапа с картинкой
+export function enlargeImage(image, altText, popupImage) {
+  const popupImageElement = popupImage.querySelector(".popup__image");
+  const popupCaption = popupImage.querySelector(".popup__caption");
+
+  popupImageElement.src = image;
+  popupImageElement.alt = altText;
+  popupCaption.textContent = altText;
+
+  openModal(popupImage);
+}
