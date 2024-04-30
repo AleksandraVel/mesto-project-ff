@@ -17,9 +17,11 @@ const nameInput = document.querySelector(".popup__input_type_name");
 const jobInput = document.querySelector(".popup__input_type_description");
 const newCardForm = document.querySelector(".popup_type_new-card form");
 const popupTypeImage = document.querySelector(".popup_type_image");
+const popupImage = popupTypeImage.querySelector(".popup__image");
+const popupCaption = popupTypeImage.querySelector(".popup__caption");
 
-let placeName;
-let imageUrl;
+const placeName = document.querySelector(".popup__input_type_card-name");
+const imageUrl = document.querySelector(".popup__input_type_url");
 
 //вывести карточки на страницу
 initialCards.forEach(function (information) {
@@ -65,10 +67,10 @@ editProfileForm.addEventListener("submit", handleProfileFormSubmit);
 newCardForm.addEventListener("submit", function (evt) {
   evt.preventDefault();
 
-  placeName = document.querySelector(".popup__input_type_card-name").value;
-  imageUrl = document.querySelector(".popup__input_type_url").value;
-
-  const card = createCard({ name: placeName, link: imageUrl }, removeCard, toggleLike, enlargeImage);
+  const placeNameValue = placeName.value;
+  const imageUrlValue = imageUrl.value;
+  
+  const card = createCard({ name: placeNameValue, link: imageUrlValue }, removeCard, toggleLike, enlargeImage);
   cardsContainer.prepend(card);
 
   closeModal(popupTypeNewCard);
@@ -77,8 +79,6 @@ newCardForm.addEventListener("submit", function (evt) {
 
 // Открытие попапа с картинкой
 function enlargeImage(information) {
-  const popupImage = popupTypeImage.querySelector(".popup__image");
-  const popupCaption = popupTypeImage.querySelector(".popup__caption");
 
   popupImage.src = information.link;
   popupImage.alt = `Увеличенное изображение ${information.name}`;
