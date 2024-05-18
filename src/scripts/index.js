@@ -15,7 +15,10 @@ const popupCloseNewCard = document.querySelector(".popup_type_new-card .popup__c
 const editProfileForm = document.querySelector(".popup_type_edit form");
 const profileTitle = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
-const profileImage = document.querySelector('.profile__image');
+const profileImage = document.querySelector(".profile__image");
+const avatarForm = document.querySelector(".popup_avatar form");
+const popupAvatar = document.querySelector(".popup_avatar");
+const avatarUrlInput = avatarForm.querySelector(".popup__input_type_url");
 const nameInput = document.querySelector(".popup__input_type_name");
 const jobInput = document.querySelector(".popup__input_type_description");
 const newCardForm = document.querySelector(".popup_type_new-card form");
@@ -23,14 +26,13 @@ const popupTypeImage = document.querySelector(".popup_type_image");
 const popupImage = popupTypeImage.querySelector(".popup__image");
 const popupCaption = popupTypeImage.querySelector(".popup__caption");
 
-
 const validationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
 };
 
 // Вывести карточки на страницу
@@ -71,18 +73,18 @@ function handleSaveProfileFormSubmit(evt) {
   const newAbout = jobInput.value;
 
   saveProfileData(newName, newAbout)
-    .then(res => {
+    .then((res) => {
       if (res.ok) {
         return res.json();
       }
       return Promise.reject(res);
     })
-    .then(userData => {
+    .then((userData) => {
       profileTitle.textContent = userData.name;
       profileDescription.textContent = userData.about;
       closeModal(popupTypeEdit);
     })
-    .catch(err => console.error(err));
+    .catch((err) => console.error(err));
 }
 
 editProfileForm.addEventListener("submit", handleSaveProfileFormSubmit);
@@ -91,19 +93,19 @@ editProfileForm.addEventListener("submit", handleSaveProfileFormSubmit);
 newCardForm.addEventListener("submit", function (evt) {
   evt.preventDefault();
 
-  const placeNameValue = placeName.value;
-  const imageUrlValue = imageUrl.value;
+  const placeNameValue = newCardForm.querySelector('[name="place-name"]').value;
+  const imageUrlValue = newCardForm.querySelector('[name="link"]').value;
 
   saveNewCard(placeNameValue, imageUrlValue)
-    .then(newCard => {
-      getUserInfo().then(userData => {
+    .then((newCard) => {
+      getUserInfo().then((userData) => {
         const card = createCard(newCard, userData._id, removeCard, toggleLike, enlargeImage);
         cardsContainer.prepend(card);
         closeModal(popupTypeNewCard);
         newCardForm.reset();
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
     });
 });
@@ -117,10 +119,33 @@ export function enlargeImage(information) {
   openModal(popupTypeImage);
 }
 
+// Добавление обработчика события на аватар
+profileImage.addEventListener("click", function () {
+  openModal(popupAvatar);
+});
+
+// Обработчик события для формы изменения аватара
+function handleSaveAvatarFormSubmit(evt) {
+  evt.preventDefault();
+  const avatarUrl = avatarUrlInput.value;
+
+  addNewAvatar(avatarUrl)
+    .then(() => {
+      profileImage.src = avatarUrl;
+      closeModal(popupAvatar);
+      avatarUrlInput.value = "";
+    })
+    .catch((err) => {
+      console.error("Ошибка при обновлении аватара:", err);
+    });
+}
+
+avatarForm.addEventListener("submit", handleSaveAvatarFormSubmit);
+
 // Включение валидации
 enableValidation(validationConfig);
 
-// Очистка ошибок валидации и отключение кнопки при открытии формы редактирования профиля и при очистке формы добавления карточки
+// Очистка ошибок валидации
 editProfileButton.addEventListener("click", function () {
   clearValidation(editProfileForm, validationConfig);
 });
@@ -133,20 +158,12 @@ Promise.all([getUserInfo(), getInitialCards()])
   .then(([userData, cardsData]) => {
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
-    profileImage.src = userData.avatar;
+    profileImage.style.backgroundImage = `url(${userData.avatar})`;
 
-    cardsData.forEach(information => {
-      getUserInfo().then(userData => {
+    cardsData.forEach((information) => {
+      getUserInfo().then((userData) => {
         cardsContainer.append(createCard(information, userData._id, removeCard, toggleLike, enlargeImage));
       });
     });
   })
-  .catch(err => console.error(err));
-
-getInitialCards()
-  .then((result) => {
-    // обрабатываем результат
-  })
-  .catch((err) => {
-    console.log(err); // выводим ошибку в консоль
-  });
+  .catch((err) => console.error(err));
