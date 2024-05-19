@@ -21,8 +21,15 @@ export function createCard(information, userId, removeCard, toggleLike, enlargeI
     }
   });
 
+  const isUserLiked = information.likes.some((like) => like._id === userId);
+  if (isUserLiked) {
+    cardLikeButton.classList.add("card__like-button_is-active");
+  }
+
   cardLikeButton.addEventListener("click", function () {
-    toggleLike(information._id, cardLikeButton.classList.contains("card__like-button_active"), like_card);
+    const isLiked = cardLikeButton.classList.contains("card__like-button_is-active");
+    toggleLike(information._id, isLiked, like_card);
+    cardLikeButton.classList.toggle("card__like-button_is-active", !isLiked);
   });
 
   cardImage.addEventListener("click", function () {
@@ -55,29 +62,31 @@ export function removeCard(card, cardId) {
     });
 }
 
-// Функция обработки событий лайка
+//состояние лайка
 export function toggleLike(cardId, isLiked, likeCounter) {
-  const likeButton = document.querySelector(`.card__like-button[data-card-id="${cardId}"]`);
+  const isUserLiked = isLiked;
 
-  if (isLiked) {
+  if (isUserLiked) {
     delitelikeCard(cardId)
-      .then(() => {
-        likeCounter.textContent = parseInt(likeCounter.textContent, 10) - 1;
-        if (likeButton) {
-          likeButton.classList.remove("card__like-button_is-active");
-          likeButton.classList.add("card__like-button_is-inactive");
-        }
+      .then((data) => {
+        likeCounter.textContent = data.likes.length;
+        likeCounter.classList.remove("card__like-button_active");
+        return false;
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("Ошибка при удалении лайка:", err);
+      });
   } else {
     likeCard(cardId)
-      .then(() => {
-        likeCounter.textContent = parseInt(likeCounter.textContent, 10) + 1;
-        if (likeButton) {
-          likeButton.classList.remove("card__like-button_is-inactive");
-          likeButton.classList.add("card__like-button_is-active");
-        }
+      .then((data) => {
+        likeCounter.textContent = data.likes.length;
+        likeCounter.classList.add("card__like-button_active");
+        return true;
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("Ошибка при добавлении лайка:", err);
+      });
   }
+
+  return !isLiked;
 }

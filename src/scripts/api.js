@@ -1,8 +1,11 @@
+const COHORT_ID = "wff-cohort-13";
+const TOKEN = "85a0fd17-5682-458d-9fc8-8af543f36b97";
+
 // Загрузка информации о пользователе с сервера
 export const getUserInfo = () => {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-13/users/me", {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/users/me`, {
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
       "Content-Type": "application/json",
     },
   }).then((res) => {
@@ -15,9 +18,9 @@ export const getUserInfo = () => {
 
 // Загрузка карточек с сервера
 export const getInitialCards = () => {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-13/cards", {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/cards`, {
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
     },
   })
     .then((res) => res.json())
@@ -29,10 +32,10 @@ export const getInitialCards = () => {
 
 // Редактирование профиля
 export const saveProfileData = (name, about) => {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-13/users/me", {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/users/me`, {
     method: "PATCH",
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -50,10 +53,10 @@ export const saveProfileData = (name, about) => {
 
 // Добавление новой карточки
 export const saveNewCard = (name, link) => {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-13/cards", {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/cards`, {
     method: "POST",
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -70,10 +73,10 @@ export const saveNewCard = (name, link) => {
 
 // Функция удаления карточки
 export function deleteCard(cardId) {
-  return fetch(`https://nomoreparties.co/v1/wff-cohort-13/cards/${cardId}`, {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/cards/${cardId}`, {
     method: "DELETE",
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
       "Content-Type": "application/json",
     },
   }).then((res) => {
@@ -86,10 +89,10 @@ export function deleteCard(cardId) {
 
 // Функция для добавления лайка
 export function likeCard(cardId) {
-  return fetch(`https://nomoreparties.co/v1/wff-cohort-13/cards/likes/${cardId}`, {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/cards/likes/${cardId}`, {
     method: "PUT",
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
       "Content-Type": "application/json",
     },
   }).then((res) => {
@@ -102,10 +105,10 @@ export function likeCard(cardId) {
 
 // Функция для удаления лайка
 export function delitelikeCard(cardId) {
-  return fetch(`https://nomoreparties.co/v1/wff-cohort-13/cards/likes/${cardId}`, {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/cards/likes/${cardId}`, {
     method: "DELETE",
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
       "Content-Type": "application/json",
     },
   }).then((res) => {
@@ -118,10 +121,10 @@ export function delitelikeCard(cardId) {
 
 // Функция для добавления аватара
 export const addNewAvatar = (avatarUrl) => {
-  return fetch(`https://nomoreparties.co/v1/wff-cohort-13/users/me/avatar`, {
+  return fetch(`https://nomoreparties.co/v1/${COHORT_ID}/users/me/avatar`, {
     method: "PATCH",
     headers: {
-      authorization: "85a0fd17-5682-458d-9fc8-8af543f36b97",
+      authorization: TOKEN,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

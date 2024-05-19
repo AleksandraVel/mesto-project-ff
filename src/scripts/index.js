@@ -1,7 +1,7 @@
 import "../pages/index.css";
 import { createCard, removeCard, toggleLike } from "../components/card.js";
 import { openModal, closeModal } from "../components/modal.js";
-import { initialCards } from "./cards.js";
+//import { initialCards } from "./cards.js";
 import { enableValidation, clearValidation } from "./validation.js";
 import { getInitialCards, getUserInfo, saveProfileData, saveNewCard, addNewAvatar } from "./api.js";
 
@@ -36,11 +36,11 @@ const validationConfig = {
 };
 
 // Вывести карточки на страницу
-initialCards.forEach(function (information) {
-  getUserInfo().then(() => {
-    cardsContainer.append(createCard(information, removeCard, toggleLike, enlargeImage));
-  });
-});
+//initialCards.forEach(function (information) {
+//  getUserInfo().then(() => {
+//    cardsContainer.append(createCard(information, removeCard, toggleLike, enlargeImage));
+//  });
+//});
 
 // Открытие модальных окон
 editProfileButton.addEventListener("click", function () {
@@ -79,9 +79,9 @@ function handleSaveProfileFormSubmit(evt) {
       }
       return Promise.reject(res);
     })
-    .then((userData) => {
-      profileTitle.textContent = userData.name;
-      profileDescription.textContent = userData.about;
+    .then((userId) => {
+      profileTitle.textContent = userId.name;
+      profileDescription.textContent = userId.about;
       closeModal(popupTypeEdit);
     })
     .catch((err) => console.error(err));
@@ -98,8 +98,8 @@ newCardForm.addEventListener("submit", function (evt) {
 
   saveNewCard(placeNameValue, imageUrlValue)
     .then((newCard) => {
-      getUserInfo().then((userData) => {
-        const card = createCard(newCard, userData._id, removeCard, toggleLike, enlargeImage);
+      getUserInfo().then((userId) => {
+        const card = createCard(newCard, userId._id, removeCard, toggleLike, enlargeImage);
         cardsContainer.prepend(card);
         closeModal(popupTypeNewCard);
         newCardForm.reset();
@@ -154,15 +154,16 @@ profileAddButton.addEventListener("click", function () {
   clearValidation(newCardForm, validationConfig);
 });
 
+// Promise
 Promise.all([getUserInfo(), getInitialCards()])
-  .then(([userData, cardsData]) => {
-    profileTitle.textContent = userData.name;
-    profileDescription.textContent = userData.about;
-    profileImage.style.backgroundImage = `url(${userData.avatar})`;
+  .then(([userId, cardsData]) => {
+    profileTitle.textContent = userId.name;
+    profileDescription.textContent = userId.about;
+    profileImage.style.backgroundImage = `url(${userId.avatar})`;
 
     cardsData.forEach((information) => {
-      getUserInfo().then((userData) => {
-        cardsContainer.append(createCard(information, userData._id, removeCard, toggleLike, enlargeImage));
+      getUserInfo().then((userId) => {
+        cardsContainer.append(createCard(information, userId._id, removeCard, toggleLike, enlargeImage));
       });
     });
   })
