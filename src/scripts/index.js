@@ -1,7 +1,6 @@
 import "../pages/index.css";
 import { createCard, removeCard, toggleLike } from "../components/card.js";
 import { openModal, closeModal } from "../components/modal.js";
-//import { initialCards } from "./cards.js";
 import { enableValidation, clearValidation } from "./validation.js";
 import { getInitialCards, getUserInfo, saveProfileData, saveNewCard, addNewAvatar } from "./api.js";
 
@@ -36,13 +35,6 @@ const validationConfig = {
 };
 
 let userId = null;
-
-// Вывести карточки на страницу
-//initialCards.forEach(function (information) {
-//  getUserInfo().then(() => {
-//    cardsContainer.append(createCard(information, removeCard, toggleLike, enlargeImage));
-//  });
-//});
 
 // Открытие модальных окон
 buttonOpenPopupProfile.addEventListener("click", function () {
@@ -124,8 +116,8 @@ function handleSaveAvatarFormSubmit(evt) {
   const avatarUrl = avatarUrlInput.value;
 
   addNewAvatar(avatarUrl)
-    .then((updatedUserInfo) => {
-      profileImage.style.backgroundImage = `url("${updatedUserInfo.avatar}")`;
+    .then((updatedAvatarInfo) => {
+      profileImage.style.backgroundImage = `url("${updatedAvatarInfo.avatar}")`;
       closeModal(popupAvatar);
       avatarUrlInput.value = "";
     })

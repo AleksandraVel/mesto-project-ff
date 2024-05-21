@@ -67,7 +67,11 @@ function isValid(formElement, inputElement) {
 
 // Функция переключения состояния кнопки отправки
 function toggleButtonState(inputList, buttonElement) {
-  const hasInvalidInput = inputList.some((inputElement) => !inputElement.validity.valid);
+  const hasInvalidInput = inputList.some((inputElement) => {
+    isValid(inputElement.form, inputElement);
+    return !inputElement.validity.valid || (inputElement.name === "link" && !isValidImageUrl(inputElement.value));
+  });
+
   if (hasInvalidInput) {
     buttonElement.classList.add(validationConfig.inactiveButtonClass);
     buttonElement.disabled = true;
