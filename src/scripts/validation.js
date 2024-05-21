@@ -1,3 +1,13 @@
+// Объект настройки валидации
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
+
 // Регулярные выражения для проверки полей
 const namePattern = /^[a-zA-Zа-яА-ЯёЁ\s\-]{2,40}$/;
 const descriptionPattern = /^[a-zA-Zа-яА-ЯёЁ\s\-]{2,200}$/;
@@ -11,32 +21,32 @@ function isValidImageUrl(url) {
 }
 
 // Функции для отображения и скрытия сообщений об ошибках ввода
-function showInputError(formElement, inputElement, errorMessage, validationClasses) {
+function showInputError(formElement, inputElement, errorMessage) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   if (errorElement) {
-    inputElement.classList.add("popup__input_type_error");
+    inputElement.classList.add(validationConfig.inputErrorClass);
     errorElement.textContent = errorMessage;
-    errorElement.classList.add("popup__error_visible");
+    errorElement.classList.add(validationConfig.errorClass);
   }
 }
 
-function hideInputError(formElement, inputElement, validationClasses) {
+function hideInputError(formElement, inputElement) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   if (errorElement) {
-    inputElement.classList.remove("popup__input_type_error");
-    errorElement.classList.remove("popup__error_visible");
+    inputElement.classList.remove(validationConfig.inputErrorClass);
+    errorElement.classList.remove(validationConfig.errorClass);
     errorElement.textContent = "";
   }
 }
 
 // Функция проверки валидности поля
-function isValid(formElement, inputElement, validationClasses) {
+function isValid(formElement, inputElement) {
   let errorMessage = "";
   if (inputElement.value.trim() === "") {
     errorMessage = inputElement.name === "link" ? "Введите адрес сайта" : "Вы пропустили это поле";
   } else if (inputElement.name === "name" && !namePattern.test(inputElement.value)) {
     errorMessage = "Минимальное количество символов: 2. Длина текста сейчас: 1 символ.";
-  } else if (inputElement.name === "description" && !namePattern.test(inputElement.value)) {
+  } else if (inputElement.name === "description" && !descriptionPattern.test(inputElement.value)) {
     errorMessage = "Минимальное количество символов: 2. Длина текста сейчас: 1 символ.";
   } else if (inputElement.name === "about" && !aboutPattern.test(inputElement.value)) {
     errorMessage = "Минимальное количество символов: 2. Длина текста сейчас: 1 символ.";
@@ -49,59 +59,59 @@ function isValid(formElement, inputElement, validationClasses) {
   }
 
   if (!inputElement.validity.valid || errorMessage) {
-    showInputError(formElement, inputElement, errorMessage || inputElement.validationMessage, validationClasses);
+    showInputError(formElement, inputElement, errorMessage || inputElement.validationMessage);
   } else {
-    hideInputError(formElement, inputElement, validationClasses);
+    hideInputError(formElement, inputElement);
   }
 }
 
 // Функция переключения состояния кнопки отправки
-function toggleButtonState(inputList, buttonElement, validationClasses) {
+function toggleButtonState(inputList, buttonElement) {
   const hasInvalidInput = inputList.some((inputElement) => !inputElement.validity.valid);
   if (hasInvalidInput) {
-    buttonElement.classList.add(validationClasses.inactiveButtonClass);
+    buttonElement.classList.add(validationConfig.inactiveButtonClass);
     buttonElement.disabled = true;
   } else {
-    buttonElement.classList.remove(validationClasses.inactiveButtonClass);
+    buttonElement.classList.remove(validationConfig.inactiveButtonClass);
     buttonElement.disabled = false;
   }
 }
 
 // Функция установки слушателей событий
-function setEventListeners(formElement, validationClasses) {
-  const inputList = Array.from(formElement.querySelectorAll(validationClasses.inputSelector));
-  const buttonElement = formElement.querySelector(validationClasses.submitButtonSelector);
+function setEventListeners(formElement) {
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
   inputList.forEach((inputElement) => {
     inputElement.addEventListener("input", function () {
-      isValid(formElement, inputElement, validationClasses);
-      toggleButtonState(inputList, buttonElement, validationClasses);
+      isValid(formElement, inputElement);
+      toggleButtonState(inputList, buttonElement);
     });
   });
 
-  toggleButtonState(inputList, buttonElement, validationClasses);
+  toggleButtonState(inputList, buttonElement);
 }
 
 // Функция очистки валидации
-export function clearValidation(formElement, validationClasses) {
-  const inputList = Array.from(formElement.querySelectorAll(validationClasses.inputSelector));
-  const buttonElement = formElement.querySelector(validationClasses.submitButtonSelector);
+export function clearValidation(formElement) {
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
   inputList.forEach((inputElement) => {
-    hideInputError(formElement, inputElement, validationClasses);
+    hideInputError(formElement, inputElement);
   });
 
-  toggleButtonState(inputList, buttonElement, validationClasses);
+  toggleButtonState(inputList, buttonElement);
 }
 
 // Функция включения валидации
-export function enableValidation(validationClasses) {
-  const formList = Array.from(document.querySelectorAll(validationClasses.formSelector));
+export function enableValidation() {
+  const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
 
   formList.forEach((formElement) => {
     formElement.addEventListener("submit", function (evt) {
       evt.preventDefault();
     });
-    setEventListeners(formElement, validationClasses);
+    setEventListeners(formElement);
   });
 }

@@ -7,9 +7,9 @@ export function createCard(information, userId, removeCard, toggleLike, enlargeI
   const cardDeleteButton = card.querySelector(".card__delete-button");
   const cardLikeButton = card.querySelector(".card__like-button");
   const cardImage = card.querySelector(".card__image");
-  const like_card = card.querySelector(".like-card");
+  const likeCounter = card.querySelector(".like-card");
 
-  like_card.textContent = Array.isArray(information.likes) ? information.likes.length : 0;
+  likeCounter.textContent = Array.isArray(information.likes) ? information.likes.length : 0;
 
   card.querySelector(".card__title").textContent = information.name;
   cardImage.src = information.link;
@@ -28,8 +28,13 @@ export function createCard(information, userId, removeCard, toggleLike, enlargeI
 
   cardLikeButton.addEventListener("click", function () {
     const isLiked = cardLikeButton.classList.contains("card__like-button_is-active");
-    toggleLike(information._id, isLiked, like_card);
-    cardLikeButton.classList.toggle("card__like-button_is-active", !isLiked);
+    toggleLike(information._id, isLiked, likeCounter)
+      .then((newIsLiked) => {
+        cardLikeButton.classList.toggle("card__like-button_is-active", newIsLiked);
+      })
+      .catch((err) => {
+        console.error("Ошибка при изменении состояния лайка:", err);
+      });
   });
 
   cardImage.addEventListener("click", function () {
@@ -38,13 +43,7 @@ export function createCard(information, userId, removeCard, toggleLike, enlargeI
     }
   });
 
-  if (information && information._id && information.owner && information.owner._id === userId) {
-    cardDeleteButton.addEventListener("click", function () {
-      if (information && information._id) {
-        removeCard(card, information._id);
-      }
-    });
-  } else {
+  if (information && information._id && information.owner && information.owner._id !== userId) {
     cardDeleteButton.remove();
   }
 
@@ -62,31 +61,29 @@ export function removeCard(card, cardId) {
     });
 }
 
-//состояние лайка
+// Функция для изменения состояния лайка
 export function toggleLike(cardId, isLiked, likeCounter) {
   const isUserLiked = isLiked;
 
   if (isUserLiked) {
-    delitelikeCard(cardId)
+    return delitelikeCard(cardId)
       .then((data) => {
         likeCounter.textContent = data.likes.length;
-        likeCounter.classList.remove("card__like-button_active");
         return false;
       })
       .catch((err) => {
         console.error("Ошибка при удалении лайка:", err);
+        return isUserLiked;
       });
   } else {
-    likeCard(cardId)
+    return likeCard(cardId)
       .then((data) => {
         likeCounter.textContent = data.likes.length;
-        likeCounter.classList.add("card__like-button_active");
         return true;
       })
       .catch((err) => {
         console.error("Ошибка при добавлении лайка:", err);
+        return isUserLiked;
       });
   }
-
-  return !isLiked;
 }
