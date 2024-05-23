@@ -22,19 +22,11 @@ export function createCard(information, userId, removeCard, toggleLike, enlargeI
   });
 
   const isUserLiked = information.likes.some((like) => like._id === userId);
-  if (isUserLiked) {
-    cardLikeButton.classList.add("card__like-button_is-active");
-  }
+  updateLikeButton(cardLikeButton, isUserLiked);
 
   cardLikeButton.addEventListener("click", function () {
     const isLiked = cardLikeButton.classList.contains("card__like-button_is-active");
-    toggleLike(information._id, isLiked, likeCounter)
-      .then((newIsLiked) => {
-        cardLikeButton.classList.toggle("card__like-button_is-active", newIsLiked);
-      })
-      .catch((err) => {
-        console.error("Ошибка при изменении состояния лайка:", err);
-      });
+    toggleLike(information._id, isLiked, likeCounter, cardLikeButton);
   });
 
   cardImage.addEventListener("click", function () {
@@ -62,28 +54,32 @@ export function removeCard(card, cardId) {
 }
 
 // Функция для изменения состояния лайка
-export function toggleLike(cardId, isLiked, likeCounter) {
+export function toggleLike(cardId, isLiked, likeCounter, cardLikeButton) {
   const isUserLiked = isLiked;
+
+  const handleLike = (data) => {
+    likeCounter.textContent = data.likes.length;
+    updateLikeButton(cardLikeButton, !isUserLiked);
+  };
 
   if (isUserLiked) {
     return delitelikeCard(cardId)
-      .then((data) => {
-        likeCounter.textContent = data.likes.length;
-        return false;
-      })
+      .then(handleLike)
       .catch((err) => {
         console.error("Ошибка при удалении лайка:", err);
         return isUserLiked;
       });
   } else {
     return likeCard(cardId)
-      .then((data) => {
-        likeCounter.textContent = data.likes.length;
-        return true;
-      })
+      .then(handleLike)
       .catch((err) => {
         console.error("Ошибка при добавлении лайка:", err);
         return isUserLiked;
       });
   }
+}
+
+//для обновления состояния кнопки лайка
+function updateLikeButton(button, isLiked) {
+  button.classList.toggle("card__like-button_is-active", isLiked);
 }
